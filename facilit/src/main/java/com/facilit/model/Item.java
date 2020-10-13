@@ -19,6 +19,8 @@ public class Item {
     @NotBlank
     private boolean wdiscount;
 
+    private BigDecimal value;
+
 
     @NotNull
     @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
@@ -28,6 +30,8 @@ public class Item {
         this.product = product;
         this.qtd = qtd;
     }
+
+    public Item(){}
 
     public long getItemCode() {
         return itemCode;
@@ -45,11 +49,6 @@ public class Item {
         this.qtd = qtd;
     }
 
-    public void increaseQuantity(int qtd) {
-        setQtd(getQtd() + qtd);
-    }
-
-
     public Product getProduct() {
         return product;
     }
@@ -64,5 +63,26 @@ public class Item {
 
     public void setWdiscount(boolean wdiscount) {
         this.wdiscount = wdiscount;
+    }
+
+    public BigDecimal getValue() {
+        return value;
+    }
+
+    public void setValue(BigDecimal value) {
+        this.value = value;
+    }
+
+    public void increaseQuantity(int qtd) {
+        setQtd(getQtd() + qtd);
+    }
+
+    public void setValue(){
+        BigDecimal var = new BigDecimal(qtd + "");
+        if(qtd >= 10){
+            setValue((getProduct().getPriceProduct().multiply(var)).multiply(new BigDecimal("0.10")));
+        } else {
+            setValue(getProduct().getPriceProduct().multiply(var));
+        }
     }
 }
