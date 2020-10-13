@@ -43,8 +43,8 @@ public class cartController {
         User user = cart.getUser();
         Product product = pr.findByProductCode(item.getProduct().getProductCode());
         if (product != null) {
-            cart.getItem().add(item);
-            item.setProduct(product);
+                cart.getItem().add(item);
+                item.setProduct(product);
             cart.setCartPrice(cart.priceRefresh());
             cr.save(cart);
             ir.save(item);

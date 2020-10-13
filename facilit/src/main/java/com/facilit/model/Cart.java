@@ -5,34 +5,26 @@ import javax.persistence.*;
 import javax.validation.constraints.NotBlank;
 import java.io.Serializable;
 import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.List;
 
 @Entity
 public class Cart implements Serializable {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long cartCode;
 
-    @NotBlank
-    private BigDecimal cartPrice; // No Discount
 
     @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
     private User user;
-
-    @NotBlank
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
-    @Column(name = "itemCode")
-    private List<Item> item;
-
-    @NotBlank
+    private List<Item> items = new ArrayList<Item>();
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
-    @Column(name = "couponCode")
-    private List<Coupon> coupons;
+    private List<Coupon> coupons = new ArrayList<Coupon>();
 
-    private double discount;
+    public Cart(){};
 
-    private BigDecimal cartPriceTotal;
 
     public long getCartCode() {
         return cartCode;
@@ -42,13 +34,6 @@ public class Cart implements Serializable {
         this.cartCode = cartCode;
     }
 
-    public BigDecimal getCartPrice() {
-        return cartPrice;
-    }
-
-    public void setCartPrice(BigDecimal cartPrice) {
-        this.cartPrice = cartPrice;
-    }
 
     public User getUser() {
         return user;
@@ -58,12 +43,12 @@ public class Cart implements Serializable {
         this.user = user;
     }
 
-    public List<Item> getItem() {
-        return item;
+    public List<Item> getItems() {
+        return items;
     }
 
-    public void setItem(List<Item> item) {
-        this.item = item;
+    public void setItems(List<Item> items) {
+        this.items = items;
     }
 
     public List<Coupon> getCoupons() {
@@ -74,12 +59,20 @@ public class Cart implements Serializable {
         this.coupons = coupons;
     }
 
-    public double getDiscount() {
-        return discount;
+
+    public Product addProduct(Product product, int qtd){
+        Item item = items.parallelStream().filter(i -> i.getProduct().equals(product)).findFirst().orElse(null);
+        if(item == null){
+            item = new Item(product, qtd);
+        } else {
+            item.increaseQuantity(qtd);
+        }
+        return product;
     }
 
-    public void setDiscount(double discount) {
-        this.discount = discount;
+    public Coupon addCoupon(Coupon coupon){
+        coupons.add(coupon);
+        return coupon;
     }
 
     public BigDecimal getcartPriceTotal() {
