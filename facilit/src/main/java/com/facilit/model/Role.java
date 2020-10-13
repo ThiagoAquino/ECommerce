@@ -1,7 +1,6 @@
 package com.facilit.model;
 
 import com.sun.istack.NotNull;
-import org.springframework.security.core.GrantedAuthority;
 
 import javax.persistence.Entity;
 import javax.persistence.Id;
@@ -9,7 +8,7 @@ import javax.persistence.ManyToMany;
 import java.util.List;
 
 @Entity
-public class Role implements GrantedAuthority {
+public class Role  {
 
     @Id
     @NotNull
@@ -34,8 +33,4 @@ public class Role implements GrantedAuthority {
         this.users = users;
     }
 
-    @Override
-    public String getAuthority() {
-        return this.nameRole;
-    }
 }
