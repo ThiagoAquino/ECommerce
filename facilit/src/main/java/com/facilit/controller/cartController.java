@@ -10,10 +10,7 @@ import javax.validation.Valid;
 @RestController
 public class cartController {
 
-    @Autowired
-    private cartRepository cr;
-
-    @Autowired
+        @Autowired
     private cartService cs;
 
 

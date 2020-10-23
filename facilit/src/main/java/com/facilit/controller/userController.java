@@ -2,6 +2,7 @@ package com.facilit.controller;
 
 import com.facilit.model.*;
 import com.facilit.repository.*;
+import com.facilit.service.cartService;
 import io.swagger.annotations.Api;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -17,13 +18,13 @@ public class userController {
     private userRepository ur;
 
     @Autowired
-    private cartController cc;
+    private cartService cs;
 
     @RequestMapping(value = "/users", method = RequestMethod.POST)
     public @ResponseBody
     User userSave(@Valid @RequestBody User user) throws Exception {
         try {
-            user = cc.cartCreate(user);
+            user = cs.cartCreate(user);
             ur.save(user);
         } catch (Exception e) {
             throw new Exception("Please, check the user");

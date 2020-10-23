@@ -34,7 +34,7 @@ public class productController {
     }
 
     @RequestMapping(value = "/products/{productCode}", method = RequestMethod.DELETE)
-    public Product productDelete(@PathVariable("productCode") long productCode) throws Exception {
+    public Product productDelete(@PathVariable("productCode") long productCode) {
         Product product = ps.productDelete(productCode);
         return product;
     }
@@ -42,7 +42,7 @@ public class productController {
 
     @RequestMapping(value = "/products/{productCode}", method = RequestMethod.PUT)
     public @ResponseBody
-    Product productUpdate(@PathVariable("productCode") long productCode, @Valid @RequestBody Product product) throws Exception {
+    Product productUpdate(@PathVariable("productCode") long productCode, @Valid @RequestBody Product product) {
         Product prod = ps.productUpdate(productCode, product);
         return prod;
     }

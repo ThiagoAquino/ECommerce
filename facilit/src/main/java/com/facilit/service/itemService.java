@@ -18,8 +18,19 @@ public class itemService {
         return item;
     }
 
+    public Iterable<Item> itemList() {
+        Iterable<Item> items = ir.findAll();
+        return items;
+    }
+
     public Item itemSave(Item item) {
         Item it = ir.save(item);
         return it;
+    }
+
+    public Item itemDelete(long itemCode){
+        Item item = ir.findByItemCode(itemCode);
+        ir.delete(item);
+        return item;
     }
 }
