@@ -2,6 +2,7 @@ package com.facilit.controller;
 
 import com.facilit.model.*;
 import com.facilit.repository.*;
+import com.facilit.service.cartService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import javax.validation.Valid;
@@ -13,33 +14,28 @@ public class cartController {
     private cartRepository cr;
 
     @Autowired
-    private productRepository pr;
+    private cartService cs;
 
-    @Autowired
-    private couponRepository cpr;
-
-    @Autowired
-    private itemRepository ir;
 
     @RequestMapping(value = "/carts/{cartCode}", method = RequestMethod.GET)
     public Cart cartOnly(@PathVariable("cartCode") long cartCode) {
-        Cart cart = cr.findByCartCode(cartCode);
+        Cart cart = cs.cartOnly(cartCode);
         return cart;
     }
 
     @RequestMapping(value = "/carts", method = RequestMethod.GET)
     public Iterable<Cart> cartList() {
-        Iterable<Cart> carts = cr.findAll();
-        for(Cart cart : carts){
-            cart.setCartPrice(cart.priceRefresh());
-        }
+        Iterable<Cart> carts = cs.cartList();
         return carts;
     }
 
     @RequestMapping(value = "/carts/{cartCode}", method = RequestMethod.POST)
     public @ResponseBody
     Cart addProductIntoCart(@PathVariable("cartCode") long cartCode, @Valid @RequestBody Item item) throws Exception {
-        Cart cart = cr.findByCartCode(cartCode);
+
+        Cart cart = cs.addProduct(cartCode, item);
+       /*
+       Cart cart = cr.findByCartCode(cartCode);
         User user = cart.getUser();
         Product product = pr.findByProductCode(item.getProduct().getProductCode());
         if (product != null) {
@@ -51,20 +47,21 @@ public class cartController {
         } else {
             throw new Exception("Product not registered");
         }
+        */
         return cart;
     }
 
     @RequestMapping(value ="carts/{cartCode}", method = RequestMethod.DELETE)
     public Cart cartDelete(@PathVariable("cartCode") long cartCode){
-        Cart cart = cr.findByCartCode(cartCode);
-        cr.delete(cart);
+        Cart cart = cs.cartDelete(cartCode);
         return cart;
     }
 
 
     @RequestMapping(value = "/cart/{cartCode}", method = RequestMethod.POST)
-    public @ResponseBody Cart
+    public @ResponseBody void
     addCouponIntoCart(@PathVariable("cartCode") long cartCode, @Valid @RequestBody Coupon coupon) throws Exception {
+        /*
         try {
             Cart cart = cr.findByCartCode(cartCode);
             Coupon coupon1 = cpr.findByCouponCode(coupon.getCouponCode());
@@ -76,14 +73,10 @@ public class cartController {
             throw new Exception("Check the coupon or the cart code");
         }
 
+         */
+
     }
 
-    protected User cartCreate(User user) {
-        Cart cart = new Cart();
-        cart.setUser(user);
-        cr.save(cart);
-        return user;
-    }
 
     protected void cartDelete(User user){
 
