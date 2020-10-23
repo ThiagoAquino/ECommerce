@@ -1,8 +1,9 @@
 package com.facilit.model;
 
 
+import com.facilit.util.Discount;
+
 import javax.persistence.*;
-import javax.validation.constraints.NotBlank;
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.util.ArrayList;
@@ -23,8 +24,7 @@ public class Cart implements Serializable {
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Coupon> coupons = new ArrayList<Coupon>();
 
-    public Cart(){};
-
+    public Cart(){}
 
     public long getCartCode() {
         return cartCode;
@@ -33,7 +33,6 @@ public class Cart implements Serializable {
     public void setCartCode(long cartCode) {
         this.cartCode = cartCode;
     }
-
 
     public User getUser() {
         return user;
@@ -60,9 +59,42 @@ public class Cart implements Serializable {
     }
 
 
-    public Product addProduct(Product product, int qtd){
+
+
+    //The cart value without discount
+    public int getSubTotal() {
+        int value = items.stream().mapToInt((i) -> i.getItemValue().intValue()).sum();
+        return value;
+    }
+
+    //Discounted cart value
+    public int getTotal() {
+        int value = getSubTotal() - (getSubTotal()*(applyDiscount()/100));
+        return value;
+    }
+
+    //Total discounts
+    public int applyDiscount() {
+        int discount = progressiveDiscount() + findCouponValue();
+    }
+
+    //Progressive discount
+    public int progressiveDiscount() {
+        if (discountPercent(getSubTotal(), Discount.START.getFrom(), Discount.START.getTo())) {
+            return Discount.START.getDiscount();
+        } else if (discountPercent(getSubTotal(), Discount.MEDIUM.getFrom(), Discount.MEDIUM.getTo())) {
+            return Discount.MEDIUM.getDiscount();
+        } else if (discountPercent(getSubTotal(), Discount.EXTREME.getFrom(), Discount.EXTREME.getTo())) {
+            return Discount.EXTREME.getDiscount();
+        } else {
+            return 0;
+        }
+    }
+
+    //Add products to cart ou update quantity
+    public Product addProduct(Product product, int qtd) {
         Item item = items.parallelStream().filter(i -> i.getProduct().equals(product)).findFirst().orElse(null);
-        if(item == null){
+        if (item == null) {
             item = new Item(product, qtd);
         } else {
             item.increaseQuantity(qtd);
@@ -70,14 +102,18 @@ public class Cart implements Serializable {
         return product;
     }
 
-    public Coupon addCoupon(Coupon coupon){
+    //Add coupons to the list of coupons
+    public Coupon addCoupon(Coupon coupon) {
         coupons.add(coupon);
         return coupon;
     }
 
-    public BigDecimal getcartPriceTotal() {
-        return cartPriceTotal;
+    //Biggest discount coupon
+    private int findCouponValue(){
+        int value = (coupons.stream().mapToInt(c ->c.getDiscount()).max().orElse(0);
+        return value;
     }
+
 
     public void setcartPriceTotal(BigDecimal cartPriceTotal) {
         this.cartPriceTotal = cartPriceTotal;
@@ -96,9 +132,9 @@ public class Cart implements Serializable {
             for (Item it : this.item) {
                 cartPriceTotal = cartPriceTotal.add(it.getProduct().getPriceProduct().multiply(BigDecimal.valueOf(it.getQtd())));
                 if (it.getQtd() >= 10 && !it.isWdiscount()) {
-                        it.getProduct().setPriceProduct(it.getProduct().getPriceProduct().multiply(BigDecimal.valueOf(0.9)));
-                        it.setWdiscount(true);
-                    }
+                    it.getProduct().setPriceProduct(it.getProduct().getPriceProduct().multiply(BigDecimal.valueOf(0.9)));
+                    it.setWdiscount(true);
+                }
                 value = value.add(it.getProduct().getPriceProduct().multiply(BigDecimal.valueOf(it.getQtd())));
             }
 
@@ -131,7 +167,12 @@ public class Cart implements Serializable {
         }
         return maior;
     }
+
+
+    private boolean discountPercent(int x, int lower, int upper) {
+        boolean b = lower <= x && x <= upper;
+    }
 }
 
-
+    }
 

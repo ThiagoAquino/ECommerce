@@ -19,7 +19,7 @@ public class Item {
     @NotBlank
     private boolean wdiscount;
 
-    private BigDecimal value;
+    private BigDecimal itemValue;
 
 
     @NotNull
@@ -65,19 +65,20 @@ public class Item {
         this.wdiscount = wdiscount;
     }
 
-    public BigDecimal getValue() {
-        return value;
+    public BigDecimal getItemValue() {
+        return itemValue;
     }
 
-    public void setValue(BigDecimal value) {
-        this.value = value;
+    public void setValue(BigDecimal itemValue) {
+        this.itemValue = itemValue;
     }
 
     public void increaseQuantity(int qtd) {
         setQtd(getQtd() + qtd);
     }
 
-    public void setValue(){
+    //Calculate this item value
+    public void setItemValue(){
         BigDecimal var = new BigDecimal(qtd + "");
         if(qtd >= 10){
             setValue((getProduct().getPriceProduct().multiply(var)).multiply(new BigDecimal("0.10")));

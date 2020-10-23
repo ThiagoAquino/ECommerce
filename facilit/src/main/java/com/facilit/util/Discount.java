@@ -13,6 +13,7 @@ public enum Discount {
         this.to = to;
     }
 
+
     public int getDiscount() {
         return discount;
     }

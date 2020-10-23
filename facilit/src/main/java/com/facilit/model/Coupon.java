@@ -15,7 +15,7 @@ public class Coupon {
     private long couponCode;
 
     @NotBlank
-    private double discount;
+    private int discount;
 
     public Coupon(){}
 
@@ -27,11 +27,11 @@ public class Coupon {
         this.couponCode = couponCode;
     }
 
-    public double getDiscount() {
+    public int getDiscount() {
         return discount;
     }
 
-    public void setDiscount(double discount) {
+    public void setDiscount(int discount) {
         this.discount = discount;
     }
 }
