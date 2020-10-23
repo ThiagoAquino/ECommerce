@@ -73,6 +73,7 @@ public class Item {
         this.itemValue = itemValue;
     }
 
+    //Increase Quantity
     public void increaseQuantity(int qtd) {
         setQtd(getQtd() + qtd);
     }

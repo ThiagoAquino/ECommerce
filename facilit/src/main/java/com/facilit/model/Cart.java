@@ -5,7 +5,6 @@ import com.facilit.util.Discount;
 
 import javax.persistence.*;
 import java.io.Serializable;
-import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -24,7 +23,8 @@ public class Cart implements Serializable {
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Coupon> coupons = new ArrayList<Coupon>();
 
-    public Cart(){}
+    public Cart() {
+    }
 
     public long getCartCode() {
         return cartCode;
@@ -59,8 +59,6 @@ public class Cart implements Serializable {
     }
 
 
-
-
     //The cart value without discount
     public int getSubTotal() {
         int value = items.stream().mapToInt((i) -> i.getItemValue().intValue()).sum();
@@ -69,13 +67,14 @@ public class Cart implements Serializable {
 
     //Discounted cart value
     public int getTotal() {
-        int value = getSubTotal() - (getSubTotal()*(applyDiscount()/100));
+        int value = getSubTotal() - (getSubTotal() * (applyDiscount() / 100));
         return value;
     }
 
     //Total discounts
     public int applyDiscount() {
         int discount = progressiveDiscount() + findCouponValue();
+        return discount;
     }
 
     //Progressive discount
@@ -109,70 +108,14 @@ public class Cart implements Serializable {
     }
 
     //Biggest discount coupon
-    private int findCouponValue(){
-        int value = (coupons.stream().mapToInt(c ->c.getDiscount()).max().orElse(0);
+    public int findCouponValue() {
+        int value = coupons.stream().mapToInt(c -> c.getDiscount()).max().orElse(0);
         return value;
     }
 
-
-    public void setcartPriceTotal(BigDecimal cartPriceTotal) {
-        this.cartPriceTotal = cartPriceTotal;
-    }
-
-    public BigDecimal priceRefresh() {
-        boolean hasCoupon = coupons.isEmpty();
-        double couponValue = (1 - applyCoupon());
-
-        if (getItem().isEmpty()) {
-            setCartPrice(BigDecimal.valueOf(0));
-            return BigDecimal.valueOf(0);
-        } else {
-            BigDecimal value = BigDecimal.valueOf(0);
-            cartPriceTotal = BigDecimal.valueOf(0);
-            for (Item it : this.item) {
-                cartPriceTotal = cartPriceTotal.add(it.getProduct().getPriceProduct().multiply(BigDecimal.valueOf(it.getQtd())));
-                if (it.getQtd() >= 10 && !it.isWdiscount()) {
-                    it.getProduct().setPriceProduct(it.getProduct().getPriceProduct().multiply(BigDecimal.valueOf(0.9)));
-                    it.setWdiscount(true);
-                }
-                value = value.add(it.getProduct().getPriceProduct().multiply(BigDecimal.valueOf(it.getQtd())));
-            }
-
-
-            if (value.intValue() >= 1000 && value.intValue() < 5000) {
-                value = value.multiply(new BigDecimal(0.95));
-                discount = 0.05;
-            } else if (value.intValue() >= 5000 && value.intValue() < 10000) {
-                value = value.multiply(new BigDecimal(0.93));
-                discount = 0.07;
-            } else if (value.intValue() >= 10000) {
-                value = value.multiply(new BigDecimal(0.9));
-                discount = 0.1;
-            }
-            if (hasCoupon) {
-                return value;
-            } else {
-                value = value.multiply(new BigDecimal(couponValue));
-                return value;
-            }
-        }
-    }
-
-    private double applyCoupon() {
-        double maior = 0;
-        for (Coupon coupon : this.coupons) {
-            if (coupon.getDiscount() > maior) {
-                maior = coupon.getDiscount();
-            }
-        }
-        return maior;
-    }
-
-
+    //Helper
     private boolean discountPercent(int x, int lower, int upper) {
         boolean b = lower <= x && x <= upper;
+        return b;
     }
 }
-
-    }
-
