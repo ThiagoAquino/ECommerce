@@ -14,9 +14,11 @@ public class cartService {
     @Autowired
     public cartRepository cr;
 
-
     @Autowired
     public productService ps;
+
+    @Autowired
+    public itemService is;
 
 
     public Cart cartOnly(long cartCode) {
@@ -26,42 +28,35 @@ public class cartService {
 
     public Cart addProduct(long cartCode, Item item) {
         Cart cart = cr.findByCartCode(cartCode);
-        cart.addProduct(item;
+        cart.addProduct(item.getProduct(), item.getQtd());
         cr.save(cart);
         return cart;
     }
 
-    public Iterable<Cart> cartList(){
+    public Iterable<Cart> cartList() {
         Iterable<Cart> carts = cr.findAll();
         return carts;
     }
 
-    public Cart cartDelete(long cartCode){
+    public Cart cartDelete(long cartCode) {
         Cart cart = cr.findByCartCode(cartCode);
         cr.delete(cart);
         return cart;
+    }
 
 
     public Cart addProductIntoCart(long cartCode, Item item) {
         Cart cart = cr.findByCartCode(cartCode);
         User user = cart.getUser();
-        Product product = ps.findByProductCode(item.getProduct().getProductCode());
+        Product product = ps.productOnly(item.getProduct().getProductCode());
         if (product != null) {
             cart.getItems().add(item);
             item.setProduct(product);
             cr.save(cart);
-            ir.save(item);
-        } else {
-            throw new Exception("Product not registered");
+            is.itemSave(item);
         }
-
-
-        */
         return cart;
     }
-}
-
-
 
     public User cartCreate(User user) {
         Cart cart = new Cart();
